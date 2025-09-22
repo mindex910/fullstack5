@@ -8,6 +8,9 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [title, setTitle] = useState("")
+  const [author, setAuthor] = useState("")
+  const [url, setUrl] = useState("")
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -18,7 +21,6 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-
     }
   }, [])
 
@@ -31,7 +33,6 @@ const App = () => {
       window.localStorage.setItem(
         "loggedBlogUser", JSON.stringify(user)
       )
-
       setUser(user);
       setUsername("");
       setPassword("");
@@ -42,6 +43,20 @@ const App = () => {
       }, 5000);
     }
   };
+
+  const handleBlog = async (event) => {
+    event.preventDefault()
+    console.log("making a new blog:", title, author, url)
+    try {
+      await blogService.create({title, author, url})
+      setTitle("")
+      setAuthor("")
+      setUrl("")
+    }
+    catch {
+      setErrorMessage("something went wrong")
+    }
+  }
 
 const logOut = () => {
   window.localStorage.removeItem("loggedBlogUser")
@@ -84,6 +99,25 @@ const logOut = () => {
     <div>
       <h2>blogs</h2>
       <p>{user.name} logged in <button onClick={logOut}>logout</button></p>
+      <h2>create new</h2>
+      <form onSubmit={handleBlog}>
+        <div>
+          <label>
+            title <input type="text" value={title} onChange={({target}) => setTitle(target.value)}/>
+          </label>
+        </div>
+        <div>
+          <label>
+            author <input type="text" value={author} onChange={({target}) => setAuthor(target.value)}/>
+          </label>
+        </div>
+        <div>
+          <label>
+            url <input type="text" value={url} onChange={({target}) => setUrl(target.value)}/>
+          </label>
+        </div>
+        <button>create</button>
+      </form>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
