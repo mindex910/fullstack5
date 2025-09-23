@@ -33,6 +33,9 @@ const App = () => {
       window.localStorage.setItem(
         "loggedBlogUser", JSON.stringify(user)
       )
+      
+      blogService.setToken(user.token)
+
       setUser(user);
       setUsername("");
       setPassword("");
@@ -116,7 +119,7 @@ const logOut = () => {
             url <input type="text" value={url} onChange={({target}) => setUrl(target.value)}/>
           </label>
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
       </form>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
